@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ajax</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+</head>
+<body>
+
+	<script>
+
+		$(document).ready(function () {
+
+			$("#action-container").hide();
+
+			$("#title-link").on("click", function() {
+				alert("TEST");
+			});
+
+			$('#search').keyup(function() {
+
+				var search = $('#search').val();
+
+				$.ajax({
+					url: 'search.php',
+					data: {search:search},
+					type: 'POST',
+					success: function(data){
+						if (!data.error) {
+							$('#result').html(data);
+						}
+					}
+				});
+
+			});
+
+
+			$("#add-car-form").submit(function(evt) {
+
+				evt.preventDefault();
+				var postData = $(this).serialize();
+				var url = $(this).attr('action');
+				
+				$.post(url, postData, function(php_table_data) {
+
+					$("#car-result").html(php_table_data);
+
+					$("#add-car-form")[0].reset();
+
+				});
+
+			});
+
+
+
+			setInterval(function(){
+				updateDisplayCars();
+			}, 1000);
+
+			function updateDisplayCars() {
+				$.ajax({
+					url: 'display_cars.php',
+					type: 'POST',
+					success: function(show_cars) {
+						if (!show_cars.error) {
+							$("#show-cars").html(show_cars);
+						}
+					}
+				});
+			}
+
+		});
+
+	</script>
+
+	<div id="container" class="col-xs-6 col-xs-offset-3">
+
+		<div class="row">
+			<h2>Search Our Database</h2>
+			<input class="form-control" type="text" name="search" id="search" placeholder="Search our inventory">
+			<br>
+			<h2 class="bg-success" id="result"></h2>
+		</div>
+
+		<div class="row">
+			<form method="POST" id="add-car-form" action="add_cars.php">
+
+				<div class="form-group">
+					<input type="text" name="car_name" class="form-control">
+				</div>
+
+				<div class="form-group">
+					<input type="submit" class="btn btn-primary" value="add car">
+				</div>
+
+			</form>
+		</div>
+
+		<div class="row">
+
+			<div class="col-xs-6">
+
+				<table class="table">
+
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Brand</th>
+						</tr>
+					</thead>
+
+					<tbody id="show-cars">
+						
+					</tbody>
+
+				</table>
+
+			</div>
+
+			<div class="col-xs-6">
+
+				<div id="action-container">
+
+					HELLO
+
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+</body>
+</html>
